@@ -15,21 +15,25 @@ export const register = ({ dispatch }, { payload, context }) => {
 }
 
 export const login = ({ dispatch, state }, { payload, context }) => {
-  return axios.post('/api/login', payload).then(response => {
-    dispatch('setToken', response.data.meta.token).then(() => {
-      dispatch('fetchUser')
-    }).then(() => {
+  return axios.post('/api/login', payload)
+  .then(response => {
+    dispatch('setToken', response.data.meta.token)
+    dispatch('fetchUser')
+    .then(() => {
       if (isEmpty(this.errors)) {
         localforage.getItem('intended').then((name) => {
           if (isEmpty(name)) {
             router.replace({ name: 'index' })
-            return
           }
-          localforage.removeItem('intended')
-          router.replace({ name: name })
+          else {
+            localforage.removeItem('intended')
+            router.replace({ name: name })
+          }
         })
       }
+      console.log(response.data)
     })
+    return Promise.resolve(response.data.data)
   }).catch((errors) => {
     context.errors = errors.response.data.errors
   })
@@ -42,6 +46,7 @@ export const logout = ({ dispatch, rootState }) => {
     dispatch('clearAuth')
   })
   .catch((error) => {
+    router.replace({ name: 'index' })
     console.log(error.response.data)
   })
 }
@@ -50,6 +55,7 @@ export const fetchUser = ({commit, dispatch, rootState}) => {
   return axios.get(rootState.baseUrl + '/api/me').then((response) => {
     commit('setAuthenticated', true)
     commit('setUserData', response.data.data)
+    return Promise.resolve(response.data.data)
   }).catch(() => {
     dispatch('clearAuth')
     return Promise.reject(new Error('Token expired'))

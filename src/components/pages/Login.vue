@@ -34,9 +34,9 @@
 </template>
 
 <script>
-  import { mapActions } from 'vuex'
+  import { mapActions, mapGetters } from 'vuex'
   import { Loading } from 'quasar'
-
+  
   export default {
     data () {
       return {
@@ -44,6 +44,11 @@
         password: 'secret',
         errors: {}
       }
+    },
+    computed: {
+      ...mapGetters({
+        user: 'auth/getUser'
+      })
     },
     methods: {
       ...mapActions({
@@ -61,7 +66,8 @@
             password: this.password
           },
           context: this
-        }).then(() => {
+        }).then((user) => {
+          console.log(this.getUser)
           Loading.hide()
         })
       }

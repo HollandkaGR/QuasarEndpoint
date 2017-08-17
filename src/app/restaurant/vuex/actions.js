@@ -11,3 +11,11 @@ export const fetchEttermek = ({commit}) => {
 export const resetEttermek = ({commit}) => {
   return commit('resetEttermek')
 }
+
+export const fetchProducts = ({commit}, payload) => {
+  return axios.get('/api/products/' + payload.restId).then(response => {
+    return Promise.resolve(response.data)
+  }).catch((errors) => {
+    return Promise.reject(new Error('Csatlakozási hiba'))
+  })
+}

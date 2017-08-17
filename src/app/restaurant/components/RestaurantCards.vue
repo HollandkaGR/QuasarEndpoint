@@ -1,8 +1,10 @@
 <template>
-  <div class="flex row gutter md-column wrap justify-between">
-    <div v-for="etterem in ettermek" class="card bg-brown-11 text-black shadow-5 rest-cards no-padding round-borders">
-      <div class="flex column justify-between items-stretch">
-        <h4 class="text-white text-center bg-brown-13 light-paragraph no-margin uppercase rest-title">{{ etterem.name }}</h4>
+  <div class="flex row gutter lt-md-column wrap justify-start">
+    <div v-for="etterem in ettermek" :key="etterem.id" class="width-1of4">
+      <div class="flex column justify-between card bg-brown-11 shadow-5 text-black" style="height:100%;">
+        <div class="flex column justify-center text-white text-center bg-brown-13">
+          <h5 class="no-margin uppercase thin-paragraph">{{ etterem.name }}</h5>  
+        </div>
         <img class="item-primary" src="~assets/350x150.png">
         <hr>
         <div class="item-content flex row justify-between rest-ratings">
@@ -14,22 +16,24 @@
           </div>
         </div>
         <hr>
-        <div class="card-content flex row wrap justify-center">
+        <div class="card-content flex row wrap justify-center items-center auto">
           <div v-for="category in categories" class="bg-brown-12 round-borders shadow-1 rest-cats">{{category}}</div>
         </div>
+        <hr>
         <div class="text-center rest-details-btn">
-          <button class="bg-green-7 outline raised glossy">Rendelek</button>
+          <button @click="showProducts(etterem.id)" class="bg-green-7 outline raised glossy">Rendelek</button>
         </div>
       </div>
     </div>
-    <button @click="toggleModal">openModal</button>
-    <restaurantOrderModal v-bind="{ modalOpened: modalOpened}" v-on:modalClosed="toggleModal"></restaurantOrderModal>
+    <button>openModal</button>
+    <restaurantOrderModal v-bind="{ modalOpened: modalOpened}" v-on:modalClosed=""></restaurantOrderModal>
   </div>
 </template>
 
 <script>
   import { mapGetters, mapActions } from 'vuex'
   import RestaurantOrderModal from './RestaurantOrderModal'
+  import { showLoadingScreen } from 'src/helpers'
   import { Loading } from 'quasar'
 
   export default {
@@ -51,21 +55,28 @@
     methods: {
       ...mapActions({
         fetchEttermek: 'restaurant/fetchEttermek',
+        fetchProducts: 'restaurant/fetchProducts',
         resetEttermek: 'restaurant/resetEttermek'
       }),
-      toggleModal: function () {
-        this.modalOpened = !this.modalOpened
+      showProducts: function (restId) {
+        console.log(restId)
+        showLoadingScreen()
+        this.fetchProducts({
+          restId
+        }).then((response) => {
+          console.log(response)
+          Loading.hide()
+        }).catch(error => {
+          this.errors.push(error.message)
+          Loading.hide()
+        })
       }
     },
     beforeMount () {
       this.resetEttermek()
     },
     mounted () {
-      Loading.show({
-        spinner: 'rings',
-        spinnerSize: 250,
-        spinnerColor: 'white'
-      })
+      showLoadingScreen()
       this.fetchEttermek().then(() => {
         Loading.hide()
       }).catch(error => {
@@ -77,14 +88,6 @@
 </script>
 
 <style lang="sass" scoped>
-  .rest-cards
-    -webkit-box-flex: 0;
-    -ms-flex: 0 1 32%;
-    flex: 0 1 32%;
-    margin: 5px 0px
-  .rest-title
-    font-size: 1.5rem
-    padding: 5px
   .rest-ratings
     padding: 2px 16px
   .rest-cats
