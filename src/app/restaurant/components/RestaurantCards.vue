@@ -25,8 +25,8 @@
         </div>
       </div>
     </div>
-    <button>openModal</button>
-    <restaurantOrderModal v-bind="{ modalOpened: modalOpened}" v-on:modalClosed=""></restaurantOrderModal>
+    <button @click="openModal">openModal</button>
+    <restaurantOrderModal v-bind="{ modalOpened: modalOpened}" v-on:modalClosed="closeModal"></restaurantOrderModal>
   </div>
 </template>
 
@@ -58,18 +58,25 @@
         fetchProducts: 'restaurant/fetchProducts',
         resetEttermek: 'restaurant/resetEttermek'
       }),
+      openModal: function () {
+        this.modalOpened = true
+      },
+      closeModal: function () {
+        this.modalOpened = false
+      },
       showProducts: function (restId) {
-        console.log(restId)
-        showLoadingScreen()
-        this.fetchProducts({
-          restId
-        }).then((response) => {
-          console.log(response)
-          Loading.hide()
-        }).catch(error => {
-          this.errors.push(error.message)
-          Loading.hide()
-        })
+        this.modalOpened = true
+        // console.log(restId)
+        // showLoadingScreen()
+        // this.fetchProducts({
+        //   restId
+        // }).then((response) => {
+        //   console.log(response)
+        //   Loading.hide()
+        // }).catch(error => {
+        //   this.errors.push(error.message)
+        //   Loading.hide()
+        // })
       }
     },
     beforeMount () {
