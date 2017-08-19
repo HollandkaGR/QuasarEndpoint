@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash'
 import { Loading } from 'quasar'
-import * as Toaster from './toaster'
+import { Popup } from './toaster'
 
 export const setHttpToken = token => {
   if (window.axios == null) {
@@ -20,6 +20,6 @@ export const showLoadingScreen = () => {
   })
 }
 
-export const showErrorToast = () => {
-  return Toaster.info
+export const showPopup = (message, type) => {
+  return new Popup(message, type)
 }

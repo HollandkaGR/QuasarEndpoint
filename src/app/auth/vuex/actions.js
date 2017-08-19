@@ -31,9 +31,10 @@ export const login = ({ dispatch, state }, { payload, context }) => {
           }
         })
       }
-      console.log(response.data)
     })
     return Promise.resolve(response.data.data)
+  }).then((user) => {
+    return Promise.resolve(user)
   }).catch((errors) => {
     context.errors = errors.response.data.errors
   })
@@ -46,6 +47,7 @@ export const logout = ({ dispatch, rootState }) => {
     dispatch('clearAuth')
   })
   .catch((error) => {
+    dispatch('clearAuth')
     router.replace({ name: 'index' })
     console.log(error.response.data)
   })
